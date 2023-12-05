@@ -15,7 +15,7 @@ public:
 protected:
     TerrainMap& map;
     std::vector<Point> path;
-    const Point start; 
+    const Point start;
     const Point finish;
 private:
     std::string name;

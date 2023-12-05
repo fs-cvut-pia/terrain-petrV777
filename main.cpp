@@ -3,48 +3,58 @@
 #include <vector>
 #include <iostream>
 #include <string>
-
-// Include files of your path classes will need to be added here
+#include <memory>
+#include "Letadlo.h"
+#include "Lodka.h"
 
 Point read_coordinates(int argc, char *argv[], int i_option) {
+
     Point p;
 
-    if (argc > i_option+1) { p.x = std::atoi(argv[i_option]); p.y = std::atoi(argv[i_option + 1]); }
+    if (argc > i_option+1) {
+        p.x = std::atoi(argv[i_option]);
+        p.y = std::atoi(argv[i_option + 1]);
+    }
     else throw std::runtime_error("Coordinates incorrectly specified!");
 
     return p;
 }
 
 int main(int argc, char *argv[]) {
-    const int nx = 256;
-    const int ny = 256;
+    try {
+        if (argc <= 4) {
+            std::cerr << "Insufficient arguments!" << std::endl;
+            return 1;
+        }
 
-    std::string terrain_filename;
+        const int nx = 256;
+        const int ny = 256;
 
-    // Load the terrain map
+        std::string terrain_filename = argv[1];
+        TerrainMap m(nx, ny, terrain_filename);
 
-    if (argc > 1) terrain_filename = argv[1];
-    else { std::cout << "No terrain file specified!" << std::endl; return 0; }
+        Point start = read_coordinates(argc, argv, 2);
+        Point finish = read_coordinates(argc, argv, 4);
 
-    TerrainMap m(nx,ny,terrain_filename);
+        std::vector<std::shared_ptr<Path>> paths = {
+                std::make_shared<Letadlo>(m, start, finish),
+                std::make_shared<Lodka>(m, start, finish),
 
-    // Load the coordinates of the start and end points
 
-    Point start = read_coordinates(argc,argv,2);
-    Point finish = read_coordinates(argc,argv,4);
+        };
 
-    std::vector<Path*> paths = { //new YourPath(m,"MyPathName",start,finish), ...
-        // Here add the list of dynamically created classes with path finding algorithms
-    };
+        for (auto& p : paths) {
+            std::cout << "Path search: " << p->getName() << std::endl;
+            std::cout << "=============" << std::endl;
+            p->find();
+            p->printStats();
+            std::cout << "=============" << std::endl;
+            p->saveToFile();
+        }
 
-    for (auto& p : paths) {
-        std::cout << "Path search: " << p->getName() << std::endl;
-        std::cout << "=============" << std::endl;
-        p->find();
-        p->printStats();
-        std::cout << "=============" << std::endl;
-        p->saveToFile();
-        delete p;
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
     }
 
     return 0;

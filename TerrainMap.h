@@ -7,18 +7,18 @@
 
 // Simple class for a 2D (x,y) coordinate vector with integer values
 
-struct Point {
+struct Point { //class where everything is public
     Point() {};
     Point(int i, int j) : x(i), y(j) {};
     int x;
     int y;
-    constexpr static int nx_max = 10000;
+    constexpr static int nx_max = 10000; //#DEFINE NX_MAX = 10000
     Point& operator= (double a) { x = a; y = a; return *this; };
     bool operator!= (Point const& v) const { return !(operator== (v)); };
     bool operator== (Point const& v) const { return x == v.x && y == v.y; };
     Point operator+ (Point const& v) const { return Point(x+v.x,y+v.y); };
     Point operator- (Point const& v) const { return Point(x-v.x,y-v.y); };
-    bool operator<  (Point const& v) const { return x + y*nx_max; }; // This is to provide a simple ordering, the operator doesn't have a geometrical meaning
+    bool operator<  (Point const& v) const { return x + y*nx_max < v.x + v.y*nx_max; }; // This is to provide a simple ordering, the operator doesn't have a geometrical meaning
     double length() const { return std::sqrt(x*x + y*y); }
 };
 

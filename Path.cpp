@@ -6,6 +6,12 @@
 Path::Path(TerrainMap& m, std::string name_in, Point start_in, Point finish_in) : map(m), name(name_in), start(start_in), finish(finish_in) {};
 
 void Path::printStats() const {
+    if(path.empty())
+    {
+        std::cout<<"NO PATH FOUND"<<std::endl;
+        return;
+    }
+
     bool land = false;
     bool water = false;
     double length = 0.0;
